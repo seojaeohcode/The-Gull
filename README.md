@@ -37,3 +37,10 @@ docker stop <container_id>
 # 종료되었는지 확인
 docker ps -a
 ```
+## 7. 패키지 관리(각자 필요한 패키지 설치 후 한 번에 병합) 
+```bash
+# 컨테이너에 접속
+docker exec -it <container_name> /bin/bash
+# 설치된 패키지 목록 확인
+pip list
+```
