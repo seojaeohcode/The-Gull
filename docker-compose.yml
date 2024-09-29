@@ -1,0 +1,12 @@
+version: "3.8" # Docker Compose의 버전 설정
+
+services:
+  thegull: # 서비스 이름
+    build: # 이미지 빌드 설정
+      context: . # Dockerfile이 있는 현재 디렉토리
+      dockerfile: Dockerfile # 사용할 Dockerfile 이름
+    ports:
+      - "5000:5000" # 호스트의 5000 포트를 컨테이너의 5000 포트로 매핑
+    volumes:
+      - ${LOCAL_PATH}:/mnt/data # .env 파일의 LOCAL_PATH 변수를 사용
+    command: tail -f /dev/null # 기본적으로 아무것도 실행하지 않음
