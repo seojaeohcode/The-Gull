@@ -3,6 +3,16 @@
 
 # Docker 사용 가이드
 ---
+## 0. .env & docker 세팅
+```bash
+# create .env file(".env"라는 이름의 파일을 루트에 생성)
+# volumes:
+#      - ${LOCAL_PATH}:/mnt/data # .env 파일의 LOCAL_PATH 변수를 사용
+# 위 LOCAL_PATH에 들어갈 경로를 만들어주기.
+# EX) LOCAL_PATH=C:/Docker
+# Docker Desktop > Setting > Resources > Advanced > Browse(해당 LOCAL_PATH로)
+```
+
 ## 1. 프로젝트 루트 디렉토리로 이동(CMD)
 ```bash
 cd /path/to/your/project
