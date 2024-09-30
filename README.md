@@ -3,7 +3,7 @@
 
 # Docker 사용 가이드
 ---
-## 0. .env & docker 세팅
+## 0. docker & .env 세팅
 ```bash
 # create .env file(".env"라는 이름의 파일을 루트에 생성)
 # volumes:
