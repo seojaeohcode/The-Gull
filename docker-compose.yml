@@ -10,3 +10,11 @@ services:
     volumes:
       - ${LOCAL_PATH}:/mnt/data # .env 파일의 LOCAL_PATH 변수를 사용
     command: tail -f /dev/null # 기본적으로 아무것도 실행하지 않음
+
+  ngrok:
+    image: ngrok/ngrok
+    ports:
+      - "4040:4040" # ngrok 웹 대시보드 포트
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN} # .env 파일의 NGROK_TOKEN 환경 변수를 사용
+    command: tail -f /dev/null
