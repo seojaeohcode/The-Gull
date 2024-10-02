@@ -54,3 +54,17 @@ docker exec -it <container_name> /bin/bash
 # 설치된 패키지 목록 확인
 pip list
 ```
+
+## 8. Slack Test (Docker NGROK Network Setting)
+```bash
+# 네트워크를 만들어 2개의 docker container가 통신이 가능하도록 만듦.
+docker network create my_network
+docker network connect my_network <container_name_api>
+docker network connect my_network <container_name_ngrok>
+flask run(IN you api container | API container에서 실행중이여야 NGROK에서 포워딩 가능. 반드시 선행.) 
+docker run --net=host -it -e NGROK_AUTHTOKEN=YOUR_NGROK_AUTHTOKEN ngrok/ngrok:latest http 5000(Your Flask Port | PowerShell 하나 더 열고, 프로젝트 폴더 경로에서 실행.)
+
+# 2개의 결과가 동일해야 함. (제대로 통신이 되는지 확인)
+http://localhost:4040
+http://127.0.0.1:5000
+```
