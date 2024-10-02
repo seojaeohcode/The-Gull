@@ -13,5 +13,16 @@ def hello_there():
     
     return make_response("There are no slack request events", 404, {"X-Slack-No-Retry": 1})
 
+# '/인사' Slash Command 처리 라우트
+@app.route('/slash-hello', methods=['POST'])
+def slash_hello():
+    slack_event = request.form  # Slash command는 form data로 전달됨
+    
+    # Slash Command '/인사' 처리
+    if slack_event.get('command') == '/인사':
+        return make_response("Hello", 200)
+    
+    return make_response("Command not recognized", 404)
+
 if __name__ == '__main__':
     app.run()
