@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile # 사용할 Dockerfile 이름
     ports:
       - "5000:5000" # 호스트의 5000 포트를 컨테이너의 5000 포트로 매핑
+    env_file:
+      - .env
     volumes:
       - ${LOCAL_PATH}:/mnt/data # .env 파일의 LOCAL_PATH 변수를 사용
     command: tail -f /dev/null # 기본적으로 아무것도 실행하지 않음
