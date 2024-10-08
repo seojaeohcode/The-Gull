@@ -55,41 +55,233 @@ def slash_hello():
     
     return make_response("Command not recognized", 404)
 
-# '/chatlog' Slash Command 처리 라우트
+## 채널 채팅 로그를 가져오는 함수 (전체 메시지 가져오기)
+#def get_chatlog1(channel_id):
+#    try:
+#        chat_logs = []
+#        has_more = True
+#        next_cursor = None
+#        
+#        while has_more:
+#            # conversations.history API를 통해 채널 메시지 기록 가져오기
+#            result = client.conversations_history(
+#                channel=channel_id,
+#                cursor=next_cursor  # 페이지네이션을 위한 cursor
+#            )
+#            
+#            # 메시지 리스트를 가져옴
+#            messages = result["messages"]
+#            
+#            # 메시지를 chat_logs에 추가
+#            for message in messages:
+#                chat_logs.append({
+#                    "user_id": message.get('user'),
+#                    "text": message.get('text'),
+#                    "timestamp": message.get('ts')
+#                })
+#            
+#            # 페이지네이션 정보 업데이트
+#            has_more = result.get('has_more', False)
+#            next_cursor = result.get('response_metadata', {}).get('next_cursor')
+#        
+#        return chat_logs  # 전체 메시지 로그 리턴
+#    
+#    except SlackApiError as e:
+#        print(f"Slack API error: {e.response['error']}")
+#        return None
+#    except Exception as e:
+#        print(f"Unexpected error: {str(e)}")
+#        return None
+
+# 채널 채팅 로그를 가져오는 함수 (봇의 메시지를 username으로 필터링)
+def get_chatlog(channel_id):
+    try:
+        chat_logs = []
+        has_more = True
+        next_cursor = None
+        
+        while has_more:
+            # conversations.history API를 통해 채널 메시지 기록 가져오기
+            result = client.conversations_history(
+                channel=channel_id,
+                cursor=next_cursor  # 페이지네이션을 위한 cursor
+            )
+            
+            # 메시지 리스트를 가져옴
+            messages = result["messages"]
+            
+            # 각 메시지의 user_id를 username으로 변환하고 필터링
+            for message in messages:
+                user_id = message.get('user')
+                
+                # 사용자 정보를 가져옴
+                user_info = client.users_info(user=user_id)
+                username = user_info['user']['name']
+                
+                # 봇의 username이 'TheGull'인 경우 메시지를 제외
+                if username == 'TheGull':
+                    continue
+                
+                # 필터링된 메시지 저장
+                chat_logs.append({
+                    "user_id": user_id,
+                    "username": username,
+                    "text": message.get('text'),
+                    "timestamp": message.get('ts')
+                })
+            
+            # 페이지네이션 정보 업데이트
+            has_more = result.get('has_more', False)
+            next_cursor = result.get('response_metadata', {}).get('next_cursor')
+        
+        return chat_logs  # 봇의 메시지를 제외한 전체 메시지 로그 리턴
+    
+    except SlackApiError as e:
+        print(f"Slack API error: {e.response['error']}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return None
+
+# 채널 채팅 로그를 가져오는 함수 (봇의 메시지만 필터링)
+def get_bot_chatlog(channel_id):
+    try:
+        bot_chat_logs = []
+        has_more = True
+        next_cursor = None
+        
+        while has_more:
+            # conversations.history API를 통해 채널 메시지 기록 가져오기
+            result = client.conversations_history(
+                channel=channel_id,
+                cursor=next_cursor  # 페이지네이션을 위한 cursor
+            )
+            
+            # 메시지 리스트를 가져옴
+            messages = result["messages"]
+            
+            # 각 메시지의 user_id를 username으로 변환하고 필터링
+            for message in messages:
+                user_id = message.get('user')
+                
+                # 사용자 정보를 가져옴
+                user_info = client.users_info(user=user_id)
+                username = user_info['user']['name']
+                
+                # 봇의 username이 'TheGull'인 경우에만 메시지를 저장
+                if username == 'TheGull':
+                    bot_chat_logs.append({
+                        "user_id": user_id,
+                        "username": username,
+                        "text": message.get('text'),
+                        "timestamp": message.get('ts')
+                    })
+            
+            # 페이지네이션 정보 업데이트
+            has_more = result.get('has_more', False)
+            next_cursor = result.get('response_metadata', {}).get('next_cursor')
+        
+        return bot_chat_logs  # 봇의 메시지 로그만 리턴
+    
+    except SlackApiError as e:
+        print(f"Slack API error: {e.response['error']}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return None
+
 @app.route('/chatlog', methods=['POST'])
 def slash_chatlog():
     slack_event = request.form  # Slash command는 form data로 전달됨
     channel_id = slack_event.get('channel_id')  # 명령어가 발생한 채널 ID 가져오기
-    print(f"Channel ID: {channel_id}")  # 채널 ID 출력
-
-    # Slash Command '/chatlog' 처리
-    if slack_event.get('command') == '/채팅내역':  # 명령어가 '/chatlog'일 때
-        try:
-            # conversations.history API를 통해 채널 메시지 기록 가져오기
-            result = client.conversations_history(channel=channel_id)
-            
-            # 각 메시지의 텍스트를 가져와 포맷팅
-            messages = result["messages"]
-            message_texts = [f"{message['user']}: {message['text']}" for message in messages]
-            chat_log = "\n".join(message_texts[:10])  # 최근 10개의 메시지만 표시
-            
-            # 채팅 기록을 채널에 메시지로 보내기 (봇이 보냄)
-            response = client.chat_postMessage(
-                channel=channel_id,  # 메시지를 보낼 채널 ID
-                text=f"Here is the chat history:\n{chat_log}",  # 채팅 기록
-                username="데굴이",  # 봇의 사용자명을 "데굴이"로 변경
-                icon_emoji=":bird:"  # 봇의 아이콘 설정 (이모지)
-            )
-            
-            return make_response("Chat log sent to the channel", 200)
-        
-        except SlackApiError as e:
-            print(f"Slack API error: {e.response['error']}")  # 에러 메시지 출력
-            error_message = f"Error fetching or sending chat history: {e.response['error']}"
-            return make_response(error_message, 500)
     
-    return make_response("Command not recognized", 404)
+    chat_logs = get_chatlog(channel_id)
+    
+    if chat_logs is None:
+        return make_response("Error fetching chat log", 500)
+    
+    # 채팅 로그가 4000자 이상일 경우 나눠서 출력
+    formatted_chat_log = "\n".join([f"{log['user_id']}: {log['text']}" for log in chat_logs])
+    
+    # 메시지가 너무 길 경우 4000자 단위로 나눠서 보냄
+    for i in range(0, len(formatted_chat_log), 4000):
+        response = client.chat_postMessage(
+            channel=channel_id,  # 메시지를 보낼 채널 ID
+            text=f"Here is the chat history:\n{formatted_chat_log[i:i+4000]}"  # 채팅 기록
+        )
+    
+    return make_response("Chat log sent to the channel", 200)
 
+# '/speechquantity' 라우트 처리
+@app.route('/speechquantity', methods=['POST'])
+def speechquantity():
+    slack_event = request.form
+    channel_id = slack_event.get('channel_id')
+    
+    # chatlog 호출하여 채팅 기록 가져오기
+    chat_logs = get_chatlog(channel_id)
+    
+    if chat_logs is None:
+        return make_response("Error fetching chat log", 500)
+    
+    print(chat_logs)
+
+    # 발화량 분석: 사용자별 메시지 수를 계산
+    user_message_count = {}
+    
+    for log in chat_logs:
+        user_id = log['user_id']
+        if user_id in user_message_count:
+            user_message_count[user_id] += 1
+        else:
+            user_message_count[user_id] = 1
+    
+    # 가장 많이 발화한 사용자 찾기
+    most_active_user = max(user_message_count, key=user_message_count.get)
+    most_active_count = user_message_count[most_active_user]
+    
+    # 결과 메시지를 Slack 채널에 보내기
+    response = client.chat_postMessage(
+        channel=channel_id,
+        text=f"User <@{most_active_user}> has spoken the most with {most_active_count} messages."
+    )
+    
+    return make_response("Speech quantity analysis sent to the channel", 200)
+
+# # '/chatlog' Slash Command 처리 라우트
+# @app.route('/chatlog', methods=['POST'])
+# def slash_chatlog():
+#     slack_event = request.form  # Slash command는 form data로 전달됨
+#     channel_id = slack_event.get('channel_id')  # 명령어가 발생한 채널 ID 가져오기
+#     print(f"Channel ID: {channel_id}")  # 채널 ID 출력
+
+#     # Slash Command '/chatlog' 처리
+#     if slack_event.get('command') == '/채팅내역':  # 명령어가 '/chatlog'일 때
+#         try:
+#             # conversations.history API를 통해 채널 메시지 기록 가져오기
+#             result = client.conversations_history(channel=channel_id)
+            
+#             # 각 메시지의 텍스트를 가져와 포맷팅
+#             messages = result["messages"]
+#             message_texts = [f"{message['user']}: {message['text']}" for message in messages]
+#             chat_log = "\n".join(message_texts[:10])  # 최근 10개의 메시지만 표시
+            
+#             # 채팅 기록을 채널에 메시지로 보내기 (봇이 보냄)
+#             response = client.chat_postMessage(
+#                 channel=channel_id,  # 메시지를 보낼 채널 ID
+#                 text=f"Here is the chat history:\n{chat_log}",  # 채팅 기록
+#                 username="데굴이",  # 봇의 사용자명을 "데굴이"로 변경
+#                 icon_emoji=":bird:"  # 봇의 아이콘 설정 (이모지)
+#             )
+            
+#             return make_response("Chat log sent to the channel", 200)
+        
+#         except SlackApiError as e:
+#             print(f"Slack API error: {e.response['error']}")  # 에러 메시지 출력
+#             error_message = f"Error fetching or sending chat history: {e.response['error']}"
+#             return make_response(error_message, 500)
+    
+#     return make_response("Command not recognized", 404)
 
 if __name__ == '__main__':
     app.run(debug=True)
