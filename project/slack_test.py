@@ -4,6 +4,7 @@ import os
 from flask import Flask, request, make_response
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -191,6 +192,10 @@ def slash_hello():
 #        print(f"Unexpected error: {str(e)}")
 #        return None
 
+# 타임스탬프를 사람이 읽을 수 있는 형식으로 변환하는 함수
+def convert_timestamp_to_readable(ts):
+    return datetime.utcfromtimestamp(float(ts)).strftime('%Y-%m-%d %H:%M:%S')
+
 # 채널 채팅 로그를 가져오는 통합 함수 (전체, 사용자, 봇 메시지 필터링) 
 # target을 user나 bot으로 지정하면 해당 타겟에 맞는 내역만 가져옴.(EX:user = user채팅내역만 가져옴.)
 # 인수를 넣지 않으면 모든 채팅내역을 가져옴.
@@ -266,8 +271,8 @@ def send_chat_log_to_slack(channel_id, target):
         )
         return
 
-    # 채팅 로그가 4000자 이상일 경우 나눠서 출력
-    formatted_chat_log = "\n".join([f"{log['user_id']}: {log['text']}" for log in chat_logs])
+    # chat_log의 각 항목에서 ID, text, timestamp, username을 포함하여 메시지를 포맷
+    formatted_chat_log = "\n".join([f"ID: {log['user_id']}, Username: {log['username']}, Time: {convert_timestamp_to_readable(log['timestamp'])}, Message: {log['text']}" for log in chat_logs])
 
     # 메시지가 너무 길 경우 4000자 단위로 나눠서 보냄
     for i in range(0, len(formatted_chat_log), 4000):
