@@ -264,6 +264,8 @@ def send_chat_log_to_slack(channel_id, target):
     # bot의 메시지 내역만 가져오기
     chat_logs = get_chatlog(channel_id, target)
 
+    print(chat_logs)
+
     if chat_logs is None:
         client.chat_postMessage(
             channel=channel_id,
@@ -305,6 +307,8 @@ def send_speech_analysis_to_slack(channel_id):
             text="Error fetching chat log"
         )
         return
+    
+    print(chat_logs)
 
     # 발화량 분석: 사용자별 메시지 수를 계산
     user_message_count = {}
