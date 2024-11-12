@@ -1,3 +1,7 @@
+# 예정
+해당 Docs Page로 설명서 작성중.
+https://seojaeohcode.github.io/The-Gull/
+
 # The-Gull
 데굴
 
