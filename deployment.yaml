@@ -1,0 +1,31 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thegull-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thegull
+  template:
+    metadata:
+      labels:
+        app: thegull
+    spec:
+      containers:
+        - name: thegull-container
+          image: thegull:latest
+          imagePullPolicy: Never # 로컬 이미지를 사용하도록 설정
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_APP
+              value: "slack_test.py"
+            - name: FLASK_RUN_HOST
+              value: "0.0.0.0"
+            - name: FLASK_RUN_PORT
+              value: "5000"
+          envFrom:
+            - configMapRef:
+                name: app-env

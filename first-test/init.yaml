@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ddns-init-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: ddns-initializer
+          image: curlimages/curl:7.85.0
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              update_url="http://freedns.afraid.org/dynamic/update.php?$YOUR_SECRET_KEY"
+              namespace="ingress-nginx"
+              service_name="nginx-ingress"
+              ip_file="/tmp/current_ip.txt"
+
+              echo "초기 공용 IP 확인 및 DDNS 설정 시작..."
+
+              # 현재 공용 IP 확인
+              current_ip=$(kubectl get service $service_name -n $namespace -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
+
+              if [ -z "$current_ip" ]; then
+                  echo "공용 IP가 설정되지 않았습니다. 초기화가 중단됩니다."
+                  exit 1
+              fi
+
+              # IP 확인 후 DDNS 업데이트
+              echo "DDNS 업데이트 중..."
+              if curl -s "$update_url"; then
+                  echo "DDNS 업데이트 성공."
+              else
+                  echo "DDNS 업데이트 실패."
+                  exit 1
+              fi
+
+              # 초기 frpc.ini 파일 생성 및 IP 반영
+              echo "$current_ip" > "$ip_file"
+              export PUBLIC_IP=$current_ip
+              envsubst < /project/frpc.ini > /project/frpc_runtime.ini
+              echo "frpc.ini 파일 초기 설정 완료."
+
+          env:
+            - name: YOUR_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: app-env
+                  key: YOUR_SECRET_KEY
+      restartPolicy: Never
+  backoffLimit: 1

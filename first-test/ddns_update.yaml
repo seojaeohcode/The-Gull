@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: network-update
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: network-update
+              image: curlimages/curl:7.85.0
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  update_url="http://freedns.afraid.org/dynamic/update.php?$YOUR_SECRET_KEY"
+                  ip_file="/tmp/current_ip.txt"
+
+                  echo "정기적인 공용 IP 확인 및 DDNS 업데이트 시작..."
+
+                  # 현재 공용 IP 확인
+                  current_ip=$(curl -s https://api.ipify.org)
+
+                  if [ -z "$current_ip" ]; then
+                      echo "공용 IP를 확인할 수 없습니다. 이번 업데이트를 건너뜁니다."
+                      exit 0
+                  fi
+
+                  # 이전 IP와 비교하여 업데이트 필요 여부 결정
+                  if [ ! -f "$ip_file" ]; then
+                      echo "$current_ip" > "$ip_file"
+                      curl -s "$update_url"
+                      echo "DDNS 업데이트 URL 호출 완료 (초기 설정)"
+                  else
+                      previous_ip=$(cat "$ip_file")
+                      if [ "$current_ip" != "$previous_ip" ]; then
+                          echo "$current_ip" > "$ip_file"
+                          curl -s "$update_url"
+                          echo "DDNS 업데이트 URL 호출 완료 (IP 변경 감지)"
+                      else
+                          echo "IP 변경 없음: $current_ip"
+                      fi
+              env:
+                - name: YOUR_SECRET_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: app-env
+                      key: YOUR_SECRET_KEY
+          restartPolicy: OnFailure

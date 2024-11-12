@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-job
+spec:
+  backoffLimit: 1 # Job 실패 시 최대 재시도 횟수
+  template:
+    spec:
+      serviceAccountName: deploy-sa # 권한이 있는 ServiceAccount 사용
+      containers:
+        - name: deploy-container
+          image: thegull:latest # 로컬 Docker 이미지 사용
+          imagePullPolicy: Never # 외부 레지스트리에서 이미지 풀링 안 함
+          command: ["/bin/sh", "-c", "/project/deploy.sh"]
+      restartPolicy: Never

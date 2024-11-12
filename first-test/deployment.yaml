@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thegull-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thegull
+  template:
+    metadata:
+      labels:
+        app: thegull
+    spec:
+      serviceAccountName: deploy-sa
+      containers:
+        - name: thegull-container
+          image: thegull:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_APP
+              value: "slack_test.py"
+            - name: FLASK_RUN_HOST
+              value: "0.0.0.0"
+            - name: FLASK_RUN_PORT
+              value: "5000"
+          envFrom:
+            - configMapRef:
+                name: app-env
+          volumeMounts:
+            - name: data-volume
+              mountPath: /mnt/data
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: ${LOCAL_PATH}

@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init
+spec:
+  template:
+    spec:
+      containers:
+        - name: init
+          image: curlimages/curl:7.85.0
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              update_url="http://freedns.afraid.org/dynamic/update.php?$YOUR_SECRET_KEY"
+              ip_file="/tmp/current_ip.txt"
+
+              echo "초기 공용 IP 확인 및 DDNS 설정 시작..."
+
+              # 현재 공용 IP 확인
+              current_ip=$(curl -s https://api.ipify.org)
+
+              if [ -z "$current_ip" ]; then
+                  echo "공용 IP를 확인할 수 없습니다. 초기화가 중단됩니다."
+                  exit 1
+              fi
+
+              # IP 확인 후 DDNS 업데이트
+              echo "DDNS 업데이트 중..."
+              if curl -s "$update_url"; then
+                  echo "DDNS 업데이트 성공."
+              else
+                  echo "DDNS 업데이트 실패."
+                  exit 1
+              fi
+
+              echo "$current_ip" > "$ip_file"
+              echo "공용 IP 파일 초기 설정 완료."
+
+          env:
+            - name: YOUR_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: app-env
+                  key: YOUR_SECRET_KEY
+      restartPolicy: Never
+  backoffLimit: 1
