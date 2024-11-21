@@ -383,4 +383,7 @@ def test():
     return "Hello, World!", 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+        # 환경 변수를 사용하여 호스트와 포트를 설정 (기본값은 0.0.0.0과 5000)
+    host = os.getenv('FLASK_RUN_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_RUN_PORT', 5000))
+    app.run(host=host, port=port)
