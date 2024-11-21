@@ -1,0 +1,76 @@
+/* 기본 스타일 */
+* {
+  box-sizing: border-box; /* 레이아웃을 정확히 맞추기 위해 추가 */
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* 수직 및 수평 중앙 정렬 */
+  height: 100vh; /* 화면 높이 채우기 */
+  overflow: hidden; /* 스크롤 방지 */
+}
+
+/* 제목 스타일 */
+h1 {
+  color: #555;
+  font-size: 2em;
+  margin-bottom: 10px; /* 여백 조정 */
+  text-align: center; /* 가운데 정렬 */
+}
+
+/* 패키지 목록 스타일 */
+#missing-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0; /* 여백 조정 */
+  width: 100%;
+  max-width: 400px;
+  max-height: 200px; /* 화면에 맞도록 높이 제한 */
+  overflow-y: auto; /* 필요 시 스크롤 추가 */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+#missing-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+#missing-list li:last-child {
+  border-bottom: none;
+}
+
+/* 버튼 스타일 */
+#next-btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* 여백 조정 */
+}
+
+#next-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+#next-btn:hover:enabled {
+  background-color: #0056b3;
+}

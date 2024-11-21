@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Packages</title>
+    <link rel="stylesheet" href="install.css">
+</head>
+
+<body>
+    <h1>필수 패키지 설치</h1>
+    <ul id="install-status">
+        <p id="status-message">누락된 필수 패키지를 설치하는 중입니다...</p>
+        <!-- 설치 상태가 여기 표시됩니다 -->
+    </ul>
+    <button id="next-btn" disabled>다음으로</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // 설치 진행 상태 업데이트
+        ipcRenderer.on('install-status', (event, status) => {
+            const list = document.getElementById('install-status');
+            const li = document.createElement('li');
+            li.textContent = status;
+            list.appendChild(li);
+        });
+
+        // 모든 설치 완료 시 메시지 표시 및 다음으로 버튼 활성화
+        ipcRenderer.on('all-installed', () => {
+            document.getElementById('status-message').textContent = '모든 필수 패키지가 설치되었습니다.';
+            document.getElementById('next-btn').disabled = false;
+        });
+
+        // 다음으로 버튼 클릭 시 input.html 또는 index.html로 이동 요청
+        document.getElementById('next-btn').addEventListener('click', () => {
+            ipcRenderer.send('go-to-input-or-index');
+        });
+    </script>
+</body>
+
+</html>

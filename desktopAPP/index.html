@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slack Bot Control</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <h1>Slack Bot Control Panel</h1>
+    <div id="env-vars">
+        <h2>Current Environment Variables</h2>
+        <p id="slack-bot-token">Slack Bot Token: </p>
+        <p id="api-url">API URL: </p>
+    </div>
+
+    <button id="start-btn">Start</button>
+    <button id="stop-btn">Stop</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // 요청하여 환경 변수 값 받기
+        ipcRenderer.send('request-credentials');
+
+        // 환경 변수 값 수신 후 HTML에 표시
+        ipcRenderer.on('load-credentials', (event, credentials) => {
+            document.getElementById('slack-bot-token').textContent = `Slack Bot Token: ${credentials.token || 'Not set'}`;
+            document.getElementById('api-url').textContent = `API URL: https://${credentials.subdomain || 'Not set'}.loca.lt`;
+        });
+
+        // Start 버튼 클릭 시
+        document.getElementById('start-btn').addEventListener('click', () => {
+            console.log('Start button clicked');
+            ipcRenderer.send('start-bot');
+        });
+
+        // Stop 버튼 클릭 시
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            console.log('Stop button clicked');
+            ipcRenderer.send('stop-bot');
+        });
+    </script>
+</body>
+
+</html>

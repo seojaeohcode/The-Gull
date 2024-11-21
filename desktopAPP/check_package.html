@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데굴:설치 패키지 확인</title>
+    <link rel="stylesheet" href="check_package.css">
+</head>
+
+<body>
+    <h1>필수 패키지 확인</h1>
+    <p>다음 패키지가 설치되어 있지 않습니다:</p>
+    <ul id="missing-list">
+        <!-- 여기에 누락된 패키지 목록이 표시됩니다 -->
+    </ul>
+
+    <!-- 다음으로 버튼 추가 -->
+    <button id="next-btn" disabled>다음으로</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('missing-dependencies', (event, missingDependencies) => {
+                const list = document.getElementById('missing-list');
+                const messageElement = document.querySelector('p'); // "다음 패키지가 설치되어 있지 않습니다:" 문구가 있는 <p> 요소 선택
+
+                if (missingDependencies.length === 0) {
+                    list.innerHTML = '<li>모든 필수 패키지가 설치되어 있습니다.</li>';
+                    messageElement.style.display = 'none'; // 문구 숨기기
+                } else {
+                    messageElement.style.display = 'block'; // 문구 보이기
+                    missingDependencies.forEach(dep => {
+                        const li = document.createElement('li');
+                        li.textContent = dep;
+                        list.appendChild(li);
+                    });
+                }
+                // 버튼을 항상 활성화
+                document.getElementById('next-btn').disabled = false;
+            });
+
+
+        // 다음으로 버튼 클릭 시 install.html로 이동 요청
+        document.getElementById('next-btn').addEventListener('click', () => {
+            ipcRenderer.send('go-to-install');
+        });
+    </script>
+</body>
+
+</html>

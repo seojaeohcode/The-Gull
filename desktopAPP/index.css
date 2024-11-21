@@ -1,0 +1,72 @@
+/* 전체 페이지 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9; /* 은은한 배경색 */
+  color: #333; /* 기본 텍스트 색상 */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 화면 전체 높이 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* 제목 스타일 */
+h1 {
+  font-size: 2em;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* 환경 변수 섹션 스타일 */
+#env-vars {
+  background-color: #fff; /* 흰색 배경 */
+  border: 1px solid #ddd; /* 테두리 */
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 살짝의 그림자 효과 */
+  width: 90%;
+  max-width: 400px;
+}
+
+#env-vars h2 {
+  font-size: 1.5em;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+#env-vars p {
+  font-size: 1em;
+  color: #666;
+  margin: 10px 0;
+}
+
+/* 버튼 스타일 */
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin: 10px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 120px; /* 버튼 크기 통일 */
+}
+
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:hover:not(:disabled) {
+  background-color: #0056b3;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}

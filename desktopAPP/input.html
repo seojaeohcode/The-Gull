@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환경변수 설정</title>
+    <link rel="stylesheet" href="input.css">
+</head>
+
+<body>
+    <h1>환경변수 설정</h1>
+    <form id="credentials-form">
+        <label for="slack-token">Slack Bot Token:</label>
+        <input type="text" id="slack-token" required><br>
+
+        <label for="bot-subdomain">Bot Subdomain:</label>
+        <input type="text" id="bot-subdomain" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // 기존 값을 요청
+        ipcRenderer.send('request-credentials');
+
+        // 기존 값을 수신하고 input 필드에 설정
+        ipcRenderer.on('load-credentials', (event, credentials) => {
+            if (credentials.token) {
+                document.getElementById('slack-token').value = credentials.token;
+            }
+            if (credentials.subdomain) {
+                document.getElementById('bot-subdomain').value = credentials.subdomain;
+            }
+        });
+
+        document.getElementById('credentials-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const token = document.getElementById('slack-token').value;
+            const subdomain = document.getElementById('bot-subdomain').value;
+            ipcRenderer.send('set-credentials', token, subdomain);
+        });
+
+        // 입력 완료 후 index.html로 전환
+        ipcRenderer.on('credentials-saved', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

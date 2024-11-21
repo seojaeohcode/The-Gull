@@ -1,0 +1,87 @@
+/* 기본 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 화면 높이 채우기 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* 제목 스타일 */
+h1 {
+  color: #555;
+  font-size: 2em;
+  margin-bottom: 10px;
+  text-align: center; /* 가운데 정렬 */
+}
+
+/* 설치 상태 리스트 스타일 */
+#install-status {
+  list-style-type: none; /* 기본 리스트 스타일 제거 */
+  padding: 0;
+  margin: 10px 0;
+  width: 100%;
+  max-width: 400px;
+  max-height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  overflow-y: auto; /* 스크롤이 필요한 경우 자동 활성화 */
+  max-height: 200px; /* 리스트 높이 제한 */
+}
+
+/* 상태 메시지 스타일 */
+#install-status #status-message {
+  font-family: Arial, sans-serif;
+  font-size: 1em;
+  /*margin: 10px 0;*/
+  /*padding: 10px;*/
+  text-align: center;
+}
+
+/* 설치 상태 리스트 아이템 스타일 */
+#install-status li {
+  /*padding: 10px;*/
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9em;
+  color: #555;
+  font-family: Arial, sans-serif;
+}
+
+#install-status li:last-child {
+  border-bottom: none;
+}
+
+/* 버튼 스타일 */
+#next-btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 10px;
+  display: block; /* 중앙 정렬 */
+  max-width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#next-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+#next-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
