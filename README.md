@@ -1,9 +1,14 @@
-# 예정
-해당 Docs Page로 설명서 작성중.
-https://seojaeohcode.github.io/The-Gull/
+# Demonstrate
+https://github.com/user-attachments/assets/65a122ce-d559-4ca0-b779-b4c373ac29a0
 
-# The-Gull
-데굴
+# Architecture
+### (완성형)
+![데굴이아키텍쳐](https://github.com/user-attachments/assets/84799379-7765-4250-bf54-8d25035eb571)
+### (초기구조)
+![데굴이초기형](https://github.com/user-attachments/assets/7d7cb059-ffe8-42b0-9c19-6825be35253b)
+
+# Abstract
+![캡스톤디자인 최종발표회 포스터(MATE)_241216 pptx](https://github.com/user-attachments/assets/d80d259e-fceb-482f-bd25-27552a331390)
 
 # Docker 사용 가이드
 ---
